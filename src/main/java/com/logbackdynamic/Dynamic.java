@@ -6,6 +6,7 @@ import ch.qos.logback.core.joran.spi.JoranException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import java.util.UUID;
 import java.util.concurrent.Executors;
@@ -14,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Dynamic {
 
-  private static final Logger log = LoggerFactory.getLogger(Dynamic.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(Dynamic.class);
 
   public static void main(String[] args) throws InterruptedException, JoranException {
 
@@ -31,8 +32,21 @@ public class Dynamic {
             .getResourceAsStream("installationstarter/logback.xml")
     );
 
-    ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-    scheduler.scheduleAtFixedRate(() -> log.info(UUID.randomUUID().toString()), 0, 1, TimeUnit.MILLISECONDS);
+    MDC.put("module", "CommandCentre");
+    var contextMap = MDC.getCopyOfContextMap();
+
+    ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(5);
+    scheduler.scheduleAtFixedRate(() -> {
+                                    MDC.setContextMap(contextMap);
+                                    try {
+                                      LOGGER.info(UUID.randomUUID().toString());
+                                    } finally {
+                                      MDC.clear();
+                                    }
+                                  },
+                                  0,
+                                  1,
+                                  TimeUnit.MILLISECONDS);
 
 // Prevent shutdown
     scheduler.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);

@@ -8,9 +8,9 @@ target/
 output/
 logs/
 dynamiclogs/
-wwwroot/
 .flattened-pom.xml
 .dependency-reduced-pom.xml
+dependency-reduced-pom.xml
 .externalToolBuilders
 .settings
 jniProxygenOutput

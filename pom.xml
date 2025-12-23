@@ -52,9 +52,11 @@
               <filters>
                 <filter>
                   <artifact>*:*</artifact>
-                  <includes>
-                    <include>META-INF/maven/**</include>
-                  </includes>
+                  <excludes>
+                    <exclude>META-INF/*.SF</exclude>
+                    <exclude>META-INF/*.DSA</exclude>
+                    <exclude>META-INF/*.RSA</exclude>
+                  </excludes>
                 </filter>
               </filters>
             </configuration>
