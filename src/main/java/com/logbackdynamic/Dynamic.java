@@ -9,14 +9,14 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import java.util.UUID;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class Dynamic {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Dynamic.class);
 
-  public static void main(String[] args) throws InterruptedException, JoranException {
+  static void main(String[] args) throws InterruptedException, JoranException {
 
     System.setProperty("log.dir", "dynamiclogs");
     System.setProperty("app.name", "installationstarter");
@@ -33,13 +33,26 @@ public class Dynamic {
 
     MDC.put("module", "CommandCentre");
 
-    ScheduledExecutorService scheduler = MDCExecutors.scheduled(5);
-    scheduler.scheduleAtFixedRate(() -> LOGGER.info(UUID.randomUUID().toString()),
-                                  0,
-                                  100,
-                                  TimeUnit.MILLISECONDS);
+    ExecutorService executor = MDCVirtualExecutors.newVirtualThreadPerTaskExecutor();
 
-// Prevent shutdown
-    scheduler.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
+    // Submit 5 repeating tasks
+    for (int i = 0; i < 5; i++) {
+      executor.execute(() -> {
+        try {
+          while (true) {
+            LOGGER.info(UUID.randomUUID().toString());
+            TimeUnit.MILLISECONDS.sleep(500);
+          }
+        } catch (InterruptedException e) {
+          Thread.currentThread().interrupt();
+        }
+      });
+    }
+
+    // Loom virtual threads created via Thread.ofVirtual().factory() are daemon threads by default,
+    // and in Java, the JVM exits when all non-daemon threads are finished.
+    // So we use this hack to keep the main thread alive forever.
+    Thread.currentThread().join();
+
   }
 }
