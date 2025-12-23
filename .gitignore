@@ -1,0 +1,66 @@
+# Build
+.m2
+maven.properties
+git.properties
+
+# Build output
+target/
+output/
+logs/
+wwwroot/
+.flattened-pom.xml
+.dependency-reduced-pom.xml
+.externalToolBuilders
+.settings
+jniProxygenOutput
+
+# Claude
+**/.claude/*
+
+
+# IDEs
+## IntelliJ
+!.idea/
+.idea/*
+!.idea/structuralSearch.xml
+!.idea/scopes/
+!.idea/codeStyles/
+!.idea/inspectionProfiles/
+!.idea/checkstyle-idea.xml
+!.idea/saveactions_settings.xml
+*iml
+
+## Visual Studio
+*.user
+*.suo
+.vs
+bin/
+obj/
+
+## VSCode
+.vscode/
+
+## Nuget
+packages/
+
+## bundler bungler
+**.min.css
+**.min.js
+
+# Build scripts
+m2.conf
+snapshot.sh
+
+# Delphi/C++
+*.~*
+*.dcu
+*.map
+*.drc
+*.tds
+*.obj
+*.lib
+
+# Javascript
+node_modules
+npm-debug.log
+yarn-error.log

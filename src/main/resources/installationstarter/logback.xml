@@ -1,0 +1,23 @@
+<configuration>
+  <property name="LOG_DIR" value="${log.dir:-logs}"/>
+  <property name="APP_NAME" value="installationstarter"/>
+
+  <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${LOG_DIR}/${APP_NAME}.log</file>
+
+    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+      <fileNamePattern>${LOG_DIR}/archive/${APP_NAME}.%d{yyyy-MM-dd_HH-mm-ss}.%i.log.gz</fileNamePattern>
+      <maxFileSize>5MB</maxFileSize>
+      <maxHistory>60</maxHistory> <!-- Prune after 60 days -->
+      <totalSizeCap>500MB</totalSizeCap>
+    </rollingPolicy>
+
+    <encoder>
+      <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{36} - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <root level="INFO">
+    <appender-ref ref="FILE"/>
+  </root>
+</configuration>
