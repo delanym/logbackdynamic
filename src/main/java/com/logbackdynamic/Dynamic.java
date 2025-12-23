@@ -1,5 +1,9 @@
 package com.logbackdynamic;
 
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.joran.JoranConfigurator;
+import ch.qos.logback.core.joran.spi.JoranException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,7 +16,21 @@ public class Dynamic {
 
   private static final Logger log = LoggerFactory.getLogger(Dynamic.class);
 
-  public static void main(String[] args) throws InterruptedException {
+  public static void main(String[] args) throws InterruptedException, JoranException {
+
+    System.setProperty("log.dir", "dynamiclogs");
+    System.setProperty("app.name", "installationstarter");
+
+    LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+    context.reset();
+
+    JoranConfigurator configurator = new JoranConfigurator();
+    configurator.setContext(context);
+    configurator.doConfigure(
+        Dynamic.class.getClassLoader()
+            .getResourceAsStream("installationstarter/logback.xml")
+    );
+
     ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     scheduler.scheduleAtFixedRate(() -> log.info(UUID.randomUUID().toString()), 0, 1, TimeUnit.MILLISECONDS);
 

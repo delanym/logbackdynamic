@@ -6,7 +6,12 @@ APP_JAR="target/logbackdynamic-1.0.0.jar"
 
 JAVA_OPTS="
   -Dlog.dir=logs
-  -Dapp.name=logbackdynamic2
+  -Dapp.name=installationstarter
+  -Dlogback.configurationFile=installationstarter/logback.xml
+  -Dlogback.debug=true
+"
+
+JAVA_OPTS="
   -Dlogback.configurationFile=installationstarter/logback.xml
   -Dlogback.debug=true
 "
