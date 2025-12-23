@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import java.util.UUID;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -33,19 +32,11 @@ public class Dynamic {
     );
 
     MDC.put("module", "CommandCentre");
-    var contextMap = MDC.getCopyOfContextMap();
 
-    ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(5);
-    scheduler.scheduleAtFixedRate(() -> {
-                                    MDC.setContextMap(contextMap);
-                                    try {
-                                      LOGGER.info(UUID.randomUUID().toString());
-                                    } finally {
-                                      MDC.clear();
-                                    }
-                                  },
+    ScheduledExecutorService scheduler = MDCExecutors.scheduled(5);
+    scheduler.scheduleAtFixedRate(() -> LOGGER.info(UUID.randomUUID().toString()),
                                   0,
-                                  1,
+                                  100,
                                   TimeUnit.MILLISECONDS);
 
 // Prevent shutdown
