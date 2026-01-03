@@ -1,5 +1,6 @@
 package com.logbackdynamic;
 
+import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
@@ -9,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import java.util.UUID;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 public class Dynamic {
@@ -33,26 +34,30 @@ public class Dynamic {
 
     MDC.put("module", "CommandCentre");
 
-    ExecutorService executor = MDCVirtualExecutors.newVirtualThreadPerTaskExecutor();
+    while (true) {
+      LOGGER.debug(UUID.randomUUID().toString());
+      LOGGER.info(UUID.randomUUID().toString());
+      LOGGER.warn(UUID.randomUUID().toString());
+      TimeUnit.MILLISECONDS.sleep(100);
 
-    // Submit 5 repeating tasks
-    for (int i = 0; i < 5; i++) {
-      executor.execute(() -> {
-        try {
-          while (true) {
-            LOGGER.info(UUID.randomUUID().toString());
-            TimeUnit.MILLISECONDS.sleep(500);
-          }
-        } catch (InterruptedException e) {
-          Thread.currentThread().interrupt();
-        }
-      });
+      // Switch log level dynamically at random intervals
+      var logger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Dynamic.class);
+
+      if (ThreadLocalRandom.current().nextInt(10) == 0) {
+        logger.setLevel(Level.WARN);
+        LOGGER.error("Switching log level to WARN");
+      }
+
+      if (ThreadLocalRandom.current().nextInt(20) == 0) {
+        logger.setLevel(Level.INFO);
+        LOGGER.error("Switching log level to INFO");
+      }
+
+      if (ThreadLocalRandom.current().nextInt(30) == 0) {
+        LOGGER.error("Switching log level to OFF");
+        logger.setLevel(Level.OFF);
+      }
     }
-
-    // Loom virtual threads created via Thread.ofVirtual().factory() are daemon threads by default,
-    // and in Java, the JVM exits when all non-daemon threads are finished.
-    // So we use this hack to keep the main thread alive forever.
-    Thread.currentThread().join();
 
   }
 }
